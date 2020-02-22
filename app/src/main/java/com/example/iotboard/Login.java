@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -48,23 +49,30 @@ public class Login extends AppCompatActivity {
     void dooit(final String uname, final String pass)
     {
 
-        String url = "http://iotboard.atwebpages.com/get_user.php";
+        String url = "http://iotboard.atwebpages.com/get_user.php?uname="+uname+"&pass="+pass;
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         StringRequest MyStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 System.out.println("this is is is : "+response);
+                if(response.equals("1")) {
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+                }
+                else
+                {
+                    Toast.makeText(Login.this, "User name or password is wrong", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
             public void onErrorResponse(VolleyError error) {
                 System.out.println("this er er er : "+error);
+
             }
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> MyData = new HashMap<String, String>();
-                MyData.put("uname", uname); //Add the data you'd like to send to the server.
-                MyData.put("pass", pass);
                 return MyData;
             }
         };
